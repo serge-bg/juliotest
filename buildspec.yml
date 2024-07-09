@@ -1,0 +1,38 @@
+version: 0.2
+
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.10 #thid wil install python 3.10 on the temporary environment
+
+    commands:
+      - echo installing cfn-lint
+      - pip3 install cfn-lint
+         # steps:
+  pre_build:
+    commands:
+      - echo ======= We entered the prebuilt stage ======
+      - echo checking the version of python installed
+      - python --version
+      echo checking if cfn-link was installed
+      cfn-lint --version
+    # steps:
+  build:
+    commands:
+      - echo ====== build started on 'date' =====
+      - echo check if the template is present
+      - ls -l
+      - echo validating the cloudformation template
+      - cfn-lint copyTemplate.yml
+      - echo build the cloudformation template
+      - aws cloudformation package --template-file copyTemplate.yml --s3-bucket ourdeploybucket --output-template-file buildartifacttemplate.yml
+
+    # steps:
+  post_build:
+    commands:
+      - echo ===== build completed at 'date' =======
+    # steps:
+artifacts:
+  files:
+     - buildartifacttemplate.yml
